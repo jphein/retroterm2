@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RETROTERM 2 — the pocket terminal for your AI coding agents</title>
+<meta name="description" content="A 2010 Motorola Droid 2, turned into a passwordless SSH terminal into a fleet of Claude Code agents. The oldest hardware you own, driving the newest thing you run.">
+<meta property="og:title" content="RETROTERM 2">
+<meta property="og:description" content="A 2010 phone as the control surface for your AI coding agents. The joke is the launch. The engineering is real.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%230b0d0a'/%3E%3Crect x='5' y='4' width='22' height='24' rx='3' fill='none' stroke='%234ade4a' stroke-width='1.5'/%3E%3Ctext x='8' y='16' font-family='monospace' font-size='7' fill='%234ade4a'%3E%26gt;_%3C/text%3E%3Crect x='13' y='23' width='6' height='2' rx='1' fill='%234ade4a'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f4f2ec; --bg2:#e9e6dc; --ink:#1a1c18; --dim:#5c5f56;
+  --phos:#1f8f2f; --phos-bright:#127a24; --amber:#b26b00; --line:#d3cfc2;
+  --card:#fffdf7; --scan:rgba(0,0,0,0.02);
+}
+:root[data-theme="dark"], :root:not([data-theme="light"]){
+  --bg:#0b0d0a; --bg2:#0f120d; --ink:#d7e0d2; --dim:#7f8a79;
+  --phos:#4ade4a; --phos-bright:#7bf07b; --amber:#ffb642; --line:#20261c;
+  --card:#11150f; --scan:rgba(255,255,255,0.015);
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#f4f2ec; --bg2:#e9e6dc; --ink:#1a1c18; --dim:#5c5f56;
+  --phos:#1f8f2f; --phos-bright:#127a24; --amber:#b26b00; --line:#d3cfc2;
+  --card:#fffdf7; --scan:rgba(0,0,0,0.02);
+}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+  background-image:repeating-linear-gradient(var(--scan) 0 1px,transparent 1px 3px);
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px}
+a{color:var(--phos);text-underline-offset:3px}
+h1,h2,h3{line-height:1.2;font-weight:700}
+.badge{display:inline-block;border:1px solid var(--phos);color:var(--phos);
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:100px}
+/* hero */
+header{padding:70px 0 40px;text-align:center;border-bottom:1px solid var(--line);
+  background:radial-gradient(120% 90% at 50% -10%,var(--bg2),var(--bg))}
+.mark{font-size:clamp(2.6rem,9vw,5.2rem);letter-spacing:.04em;margin:.2em 0 .1em;
+  color:var(--phos-bright);text-shadow:0 0 22px color-mix(in srgb,var(--phos) 40%,transparent)}
+.mark b{color:var(--amber)}
+.tag{font-size:clamp(1rem,2.6vw,1.35rem);color:var(--ink);margin:.2em auto .1em;max-width:34ch}
+.sub{color:var(--dim);max-width:52ch;margin:.6em auto 0}
+.cta{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 20px;border-radius:8px;text-decoration:none;
+  font-weight:700;border:1px solid var(--phos)}
+.btn.solid{background:var(--phos);color:var(--bg)}
+.btn.ghost{color:var(--phos)}
+.btn.dead{border-color:var(--line);color:var(--dim);cursor:not-allowed}
+/* device */
+.stage{display:flex;justify-content:center;padding:44px 0}
+.device{width:min(430px,86vw);aspect-ratio:16/10;background:#161915;border-radius:18px;
+  border:2px solid #2a2f26;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:14px 54px;
+  position:relative;display:flex;flex-direction:column}
+.device::before{content:"";position:absolute;right:16px;top:0;bottom:0;width:22px;
+  border-left:1px dashed #333;opacity:.5}
+.kbd{content:"";position:absolute;left:8px;right:8px;bottom:-2px;height:6px}
+.screen{flex:1;background:#050704;border-radius:5px;padding:12px 13px;overflow:hidden;
+  font-size:.62rem;line-height:1.5;color:var(--phos);text-align:left;
+  box-shadow:inset 0 0 40px rgba(74,222,74,.06)}
+.screen .p{color:var(--amber)} .screen .d{color:#5f6b58} .screen .g{color:var(--phos-bright)}
+.cur{display:inline-block;width:6px;height:.8em;background:var(--phos);animation:blink 1.1s step-end infinite;vertical-align:-1px}
+@keyframes blink{50%{opacity:0}}
+.hint{text-align:center;color:var(--dim);font-size:.8rem;margin-top:-24px;padding-bottom:20px}
+/* sections */
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(1.5rem,4vw,2.1rem);color:var(--phos-bright)}
+h2 .n{color:var(--dim);font-size:.7em;margin-right:.5em}
+.lead{color:var(--dim);max-width:60ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:26px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3{margin:.1em 0 .4em;font-size:1.05rem}
+.card p{margin:0;color:var(--dim);font-size:.92rem}
+.spec{width:100%;border-collapse:collapse;margin-top:22px;font-size:.92rem}
+.spec td{padding:11px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec td:first-child{color:var(--dim);width:44%}
+.spec td:last-child{color:var(--ink)}
+.spec .wink{color:var(--amber);font-size:.82em}
+.real{background:var(--bg2);border-left:3px solid var(--amber);padding:16px 18px;border-radius:0 10px 10px 0;margin-top:24px}
+.real b{color:var(--amber)}
+.shots{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:24px}
+.shot{flex:1;min-width:260px}
+.shot img{width:100%;border:1px solid var(--line);border-radius:8px;display:block}
+.shot figcaption{color:var(--dim);font-size:.82rem;margin-top:8px;text-align:center}
+.slot{flex:1;min-width:260px;border:1px dashed var(--line);border-radius:8px;
+  padding:26px;color:var(--dim);font-size:.85rem;text-align:center}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:24px 0 0}
+ol.steps li{position:relative;padding:12px 0 12px 44px;border-bottom:1px solid var(--line);color:var(--ink)}
+ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:11px;
+  width:28px;height:28px;border:1px solid var(--phos);color:var(--phos);border-radius:50%;
+  display:grid;place-items:center;font-size:.85rem}
+ol.steps small{color:var(--dim)}
+pre{background:#050704;color:var(--phos);border:1px solid var(--line);border-radius:8px;
+  padding:14px;overflow-x:auto;font-size:.82rem;line-height:1.5}
+pre .c{color:#5f6b58}
+footer{padding:44px 0 60px;color:var(--dim);font-size:.85rem;text-align:center}
+footer a{color:var(--dim)}
+.disc{max-width:60ch;margin:0 auto 18px}
+.toggle{position:fixed;top:14px;right:14px;background:var(--card);border:1px solid var(--line);
+  color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.78rem;cursor:pointer;z-index:9}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="(function(){var r=document.documentElement;var d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);r.setAttribute('data-theme',d?'light':'dark');})()">◐ theme</button>
+
+<header>
+  <div class="wrap">
+    <span class="badge">Est. 2010 · Now with AI</span>
+    <h1 class="mark">RETRO<b>TERM</b> 2</h1>
+    <p class="tag">The pocket terminal for your AI coding agents.</p>
+    <p class="sub">A rugged slide-out QWERTY that thumbs commands straight into a fleet of
+      <b>Claude&nbsp;Code</b> agents building software on your network. The oldest hardware
+      you own, driving the newest thing you run.
+      <em>It is a sixteen-year-old phone. That is the entire joke, and we are being honest about it.</em></p>
+    <div class="cta">
+      <a class="btn solid" href="#how">How it actually works</a>
+      <a class="btn ghost" href="https://github.com/jphein/retroterm2">Source &amp; guide</a>
+      <span class="btn dead" title="It's a phone from 2010. There is no store.">Pre-order — sold out (forever)</span>
+    </div>
+  </div>
+</header>
+
+<div class="stage"><div class="device"><div class="screen">
+<span class="d"># RETROTERM 2 — field terminal</span><br>
+<span class="d"># android 2.2 · omap3630 · 5-row qwerty</span><br><br>
+<span class="p">you@homelab</span>:<span class="g">~</span>$ tmux attach<br>
+<span class="d">[0] 0:forge  1:vale  2:grove*  3:rune</span><br><br>
+<span class="p">you@homelab</span>:<span class="g">~</span>$ uptime<br>
+&nbsp; 04:41:02  up 71 days,  load 0.14<br>
+<span class="p">you@homelab</span>:<span class="g">~</span>$ ssh — auth: <span class="g">publickey ✓</span><br>
+<span class="p">you@homelab</span>:<span class="g">~</span>$ <span class="cur"></span>
+</div></div></div>
+<p class="hint">↑ not a photo — the browser drawing what the screen looks like. real hardware shots below.</p>
+
+<section id="pitch"><div class="wrap">
+  <h2><span class="n">01</span>The pitch</h2>
+  <p class="lead">You're running a swarm of AI agents that write code, run tests, and ship commits
+    around the clock. You should be able to lean back, slide open a keyboard, and thumb
+    <code>tmux attach</code> to see what they're up to — from a phone older than the concept of an
+    AI coding agent. RETROTERM 2 is that. It shouldn't work. It does.</p>
+  <div class="grid">
+    <div class="card"><h3>🤖 Attach to the swarm</h3><p>SSH straight into the tmux where your
+      <b>Claude Code</b> agents live. Read their output, answer a prompt, nudge a stuck one —
+      a control surface for the fleet, in your palm.</p></div>
+    <div class="card"><h3>⌨︎ Tactile input</h3><p>A five-row physical QWERTY that clicks. Your
+      thumbs already know it. No autocorrect will ever turn <code>rm</code> into <code>Rm</code>.</p></div>
+    <div class="card"><h3>🔒 Key-only access</h3><p>Passwordless public-key SSH. The key lives on
+      the device; the server never sees a password. Getting there required minor surgery — see below.</p></div>
+    <div class="card"><h3>📡 Local, cloudless</h3><p>Joins your Wi-Fi, reaches your box, attaches
+      your session. No account, no cloud relay, no telemetry a 2010 build could phone home even
+      if it wanted to.</p></div>
+  </div>
+</div></section>
+
+<section id="spec"><div class="wrap">
+  <h2><span class="n">02</span>Spec sheet</h2>
+  <p class="lead">Real numbers. Presented with a straight face.</p>
+  <table class="spec">
+    <tr><td>Display</td><td>3.7″ 480×854 TFT <span class="wink">— rotate your head for landscape</span></td></tr>
+    <tr><td>Keyboard</td><td>5-row backlit slide-out QWERTY <span class="wink">— the entire point</span></td></tr>
+    <tr><td>Processor</td><td>1 GHz TI OMAP3630, single core <span class="wink">— one (1) core</span></td></tr>
+    <tr><td>Memory</td><td>512 MB RAM <span class="wink">— plenty, for a terminal</span></td></tr>
+    <tr><td>OS</td><td>Android 2.2 “Froyo” <span class="wink">— last updated during the Obama administration</span></td></tr>
+    <tr><td>Connectivity</td><td>802.11n Wi-Fi, 3G <span class="wink">— 5G-ready: no. 4G-ready: also no</span></td></tr>
+    <tr><td>Security model</td><td>Physical possession <span class="wink">— whoever holds it, holds it</span></td></tr>
+    <tr><td>Weight</td><td>169 g <span class="wink">— reassuringly a brick</span></td></tr>
+    <tr><td>Price</td><td>$0 <span class="wink">— it was in a drawer</span></td></tr>
+  </table>
+</div></section>
+
+<section id="gallery"><div class="wrap">
+  <h2><span class="n">03</span>Actual hardware</h2>
+  <p class="lead">Screenshots pulled straight off the device's framebuffer. Hostnames redacted,
+    because this page is public and the terminal on the other end is not.</p>
+  <div class="shots">
+    <figure class="shot">
+      <img src="assets/screenshot-hostlist.png" alt="VX ConnectBot host list on the Droid 2, showing a saved key-authenticated host">
+      <figcaption>The host list. One tap → a shell. The green dot means it connected clean.</figcaption>
+    </figure>
+    <div class="slot">📷 <b>Physical photos go here.</b><br>
+      Drop a shot of the actual slider into <code>assets/</code> — the terminal glowing in a
+      dark room is the whole aesthetic and no browser can fake it.</div>
+  </div>
+</div></section>
+
+<section id="real"><div class="wrap">
+  <h2><span class="n">04</span>What this actually is</h2>
+  <div class="real">
+    <p>It's a <b>2010 Motorola Droid 2</b> running Android 2.2, turned into a passwordless SSH
+    terminal into a homelab. It is not a product, it is not for sale, and nothing was manufactured.
+    The “launch” is the joke. The engineering under it is real, and it was more involved than it
+    had any right to be — a phone this old can't complete a modern SSH handshake, and the SSH app
+    that runs on it ships a signature bug. Both had to be fixed. That's the part worth reading.</p>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2><span class="n">05</span>How it was actually done</h2>
+  <p class="lead">Four real problems, four fixes. None of them were “install an app.”</p>
+
+  <ol class="steps">
+    <li><b>A door the phone can knock on.</b> A 2011-era SSH client only speaks SHA-1-era key
+      exchange, which modern OpenSSH refuses outright — the handshake dies before login.
+      <small>Fix: a second SSH daemon on a side port that additionally accepts the legacy
+      algorithms, RSA host key only. The main port stays fully modern.</small>
+      <pre><span class="c"># /etc/ssh/sshd_config_legacy — side port for vintage clients</span>
+Port 2222
+HostKey /etc/ssh/ssh_host_rsa_key
+KexAlgorithms +diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedAlgorithms +ssh-rsa
+Ciphers +aes128-ctr,aes128-cbc</pre></li>
+
+    <li><b>A client that signs correctly.</b> The original ConnectBot on this build produced RSA
+      signatures the server rejected as “invalid format” — key auth could never succeed.
+      <small>Fix: VX ConnectBot, the fork maintained for old Android, whose signer is repaired.</small></li>
+
+    <li><b>Getting the key onto it.</b> No cloud sync, no working file picker path. But the phone
+      is rooted, so the key went <em>straight into the app's database</em> — the private key
+      encoded as PKCS#8, the public key as X.509, written into ConnectBot's SQLite <code>pubkeys</code>
+      table, with a matching host row linked to it. The public half was authorized on the server.
+      <small>Gotcha that cost an hour: a hand-injected host row leaves columns the UI normally
+      fills as <code>NULL</code> — and the client calls <code>.equals()</code> on one of them
+      (<code>useauthagent</code>), so it authenticates perfectly and then crashes with a
+      NullPointerException before requesting the shell. Fill the nullable columns.</small></li>
+
+    <li><b>Doing it all remotely, and proving it.</b> The whole setup was driven over a USB cable
+      with no eyes on the phone: read the app's schema, inject the key, then <em>capture the raw
+      framebuffer</em> (<code>/dev/graphics/fb0</code>) to see the screen and <em>inject input
+      events</em> to drive the UI — connect, watch, confirm. Verified server-side by the one line
+      that matters: a real login shell on a pty, authenticated by key, no password.
+      <small>Second gotcha: the app caches its database in memory, so it must be fully killed —
+      not just backgrounded — before it will re-read an edited database.</small></li>
+  </ol>
+
+  <p class="lead" style="margin-top:28px">Result: open the saved host, and you're at a shell.
+    <code>tmux attach</code>, and a phone from 2010 is sharing the exact session as everything
+    modern on the network.</p>
+</div></section>
+
+<section id="get"><div class="wrap">
+  <h2><span class="n">06</span>Get yours</h2>
+  <div class="grid">
+    <div class="card"><h3>Step 1</h3><p>Find a Droid 2 (or any rooted, physical-keyboard Android
+      2.x device) in a drawer, a bin, or a relative's garage.</p></div>
+    <div class="card"><h3>Step 2</h3><p>Read the guide. It's the four steps above, with the exact
+      commands.</p></div>
+    <div class="card"><h3>Step 3</h3><p>Thumb a command into your homelab from a device older than
+      some of your coworkers.</p></div>
+  </div>
+  <div class="cta" style="justify-content:flex-start">
+    <a class="btn solid" href="https://github.com/jphein/retroterm2#readme">Read the full guide →</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p class="disc"><b>RETROTERM 2</b> is a joke wrapped around a real weekend project. It is not a
+  product, not affiliated with Motorola or Anthropic or anyone else, and nothing here is for sale.
+  It's one person's rooted 2010 phone and the SSH bridge that turned it into a pocket console for
+  a fleet of AI coding agents.</p>
+  <p class="disc" style="opacity:.7">Built with a cable, a framebuffer, and poor judgment.</p>
+  <p class="famfoot"><span>signal · MIT · <a href="https://github.com/jphein/retroterm2">github</a></span>
+    <span id="version" class="ver-name"></span></p>
+</div></footer>
+<style>
+.famfoot{display:flex;gap:14px;justify-content:center;align-items:baseline;flex-wrap:wrap;
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:.82rem}
+.famfoot .ver-name{font-style:italic;color:var(--phos)}
+</style>
+<script>
+/* shared realm.watch footer version, same mechanism the family sites use:
+   fetch version.json → set #version to the sigil name. */
+fetch('version.json').then(function(r){return r.json();}).then(function(v){
+  var el=document.getElementById('version');
+  if(el && v && v.version) el.textContent=v.version;
+}).catch(function(){});
+</script>
+</body>
+</html>
