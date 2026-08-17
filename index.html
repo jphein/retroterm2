@@ -101,6 +101,14 @@ ol.steps small{color:var(--dim)}
 pre{background:#050704;color:var(--phos);border:1px solid var(--line);border-radius:8px;
   padding:14px;overflow-x:auto;font-size:.82rem;line-height:1.5}
 pre .c{color:#5f6b58}
+.share-row{display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap;margin-top:22px}
+.btn.share{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;font-size:.9rem;
+  border-radius:8px;border:1px solid var(--line);color:var(--ink);text-decoration:none;
+  background:var(--card);cursor:pointer;font-family:inherit}
+.btn.share:hover{border-color:var(--phos);color:var(--phos)}
+.btn.share svg{width:17px;height:17px;fill:currentColor;flex:none}
+.btn.share.native{display:none}
+.share-sub{color:var(--dim);font-size:.85rem;margin-top:14px;max-width:60ch}
 footer{padding:44px 0 60px;color:var(--dim);font-size:.85rem;text-align:center}
 footer a{color:var(--dim)}
 .disc{max-width:60ch;margin:0 auto 18px}
@@ -255,6 +263,34 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
   </div>
 </div></section>
 
+<section id="share"><div class="wrap">
+  <h2><span class="n">07</span>📣 Share it</h2>
+  <p class="lead">If a sixteen-year-old phone running your AI agents made you smile, spread it.</p>
+  <div class="share-row">
+    <a class="btn share" target="_blank" rel="noopener"
+       href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fjphein.github.io%2Fretroterm2%2F&t=Show%20HN%3A%20RETROTERM%202%20%E2%80%94%20a%202010%20Droid%202%20as%20a%20passwordless%20SSH%20console%20for%20a%20Claude%20Code%20agent%20fleet">
+      <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm8.2 10.4L7.4 6.8h1.9l2.7 4.9 2.7-4.9h1.9l-3.8 6.6v4.6h-1.6v-4.6z"/></svg>
+      Hacker News</a>
+    <a class="btn share" target="_blank" rel="noopener"
+       href="https://www.reddit.com/submit?url=https%3A%2F%2Fjphein.github.io%2Fretroterm2%2F&title=RETROTERM%202%20%E2%80%94%20I%20turned%20a%202010%20Motorola%20Droid%202%20into%20a%20passwordless%20SSH%20terminal%20for%20my%20AI%20coding%20agents">
+      <svg viewBox="0 0 24 24"><path d="M14.5 4l1 3.6c1.6.1 3.1.6 4.2 1.4a2 2 0 112.2 3.3c.1.4.1.7.1 1.1 0 3.4-4 6.1-9 6.1s-9-2.7-9-6.1c0-.4 0-.7.1-1.1a2 2 0 112.2-3.3c1.2-.9 2.9-1.4 4.7-1.5l1.2-4.4 3.3.9zM9 12.8a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6zm6 0a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6zm-6.3 4.5c.9.7 2 1 3.3 1s2.4-.3 3.3-1l.7.8c-1.1.9-2.5 1.3-4 1.3s-2.9-.4-4-1.3l.7-.8z"/></svg>
+      Reddit</a>
+    <a class="btn share" target="_blank" rel="noopener"
+       href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fjphein.github.io%2Fretroterm2%2F">
+      <svg viewBox="0 0 24 24"><path d="M13.4 21v-8.2h2.7l.4-3.2h-3.1V7.6c0-.9.3-1.6 1.6-1.6h1.7V3.2c-.3 0-1.3-.2-2.5-.2-2.5 0-4.2 1.5-4.2 4.3v2.3H7.3v3.2H10V21h3.4z"/></svg>
+      Facebook</a>
+    <button class="btn share" onclick="copyThenOpen(this,'https://hackaday.com/submit-a-tip/')"
+            title="Copies the project link, then opens the Hackaday tips line — paste it there.">
+      <svg viewBox="0 0 24 24"><path d="M21.7 6.3l-3.1 3.1-3-.5-.5-3 3.1-3.1a5 5 0 00-6.5 6.5L4 17l-1 4 4-1 7.7-7.7a5 5 0 006.5-6.5l.5.5z"/></svg>
+      <span class="lbl">Hackaday tip</span></button>
+    <button class="btn share native" onclick="nativeShare()">
+      <svg viewBox="0 0 24 24"><path d="M18 16a3 3 0 00-2.2 1L8.9 13a3 3 0 000-2l6.9-4a3 3 0 10-1-1.7L7.9 9.2a3 3 0 100 5.6l6.9 3.9A3 3 0 1018 16z"/></svg>
+      Share…</button>
+  </div>
+  <p class="share-sub">The Hackaday button copies the link and opens their tips line.
+    On a phone, <em>Share…</em> opens your native share sheet. On a 2010 phone, godspeed.</p>
+</div></section>
+
 <footer><div class="wrap">
   <p class="disc"><b>RETROTERM 2</b> is a joke wrapped around a real weekend project. It is not a
   product, not affiliated with Motorola or Anthropic or anyone else, and nothing here is for sale.
@@ -276,6 +312,17 @@ fetch('version.json').then(function(r){return r.json();}).then(function(v){
   var el=document.getElementById('version');
   if(el && v && v.version) el.textContent=v.version;
 }).catch(function(){});
+
+/* share buttons — same pattern as the moyoung-watch project */
+var SHARE_URL="https://jphein.github.io/retroterm2/";
+function flash(btn,txt){var l=btn.querySelector(".lbl")||btn;var old=l.textContent;
+  l.textContent=txt;setTimeout(function(){l.textContent=old;},1800);}
+function copyThenOpen(btn,url){navigator.clipboard.writeText(SHARE_URL).then(function(){
+  flash(btn,"Link copied ✓");window.open(url,"_blank","noopener");});}
+function nativeShare(){navigator.share({title:"RETROTERM 2",
+  text:"A 2010 Motorola Droid 2 turned into a passwordless SSH console for a fleet of Claude Code agents.",
+  url:SHARE_URL}).catch(function(){});}
+if(navigator.share){var n=document.querySelector(".btn.share.native");if(n)n.style.display="inline-flex";}
 </script>
 </body>
 </html>
