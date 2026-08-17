@@ -314,23 +314,42 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
 
 <section id="root"><div class="wrap">
   <h2><span class="n">07</span>Rooting the thing</h2>
-  <p class="lead">Root is a prerequisite — the key was written straight into the SSH app's database,
-    which needs it. The Droid 2 in these photos was <b>already rooted</b> before this project began, so
-    the honest answer is: use the well-documented era-standard method for your exact model and build.</p>
-  <div class="grid">
-    <div class="card"><h3>Droid 2 / early Motorola</h3><p>The community tools of the day —
-      Motorola-specific one-click rooters and recovery bootstraps — are archived across XDA and
-      GitHub. Match the tool to your exact software version; a mismatch soft-bricks nothing you
-      can't recover, but it won't take.</p></div>
-    <div class="card"><h3>Verify it took</h3><p><code>adb shell su -c id</code> returning
-      <code>uid=0(root)</code> is the whole test. If it prompts on the phone for Superuser access,
-      grant it and re-run.</p></div>
-    <div class="card"><h3>Then, and only then</h3><p>The database injection in step&nbsp;3 works.
-      Without root there's no path to the app's private storage on a stock build, and no working
-      file-import UI either.</p></div>
+  <p class="lead">Root is the prerequisite — writing a key into an app's private database needs it.
+    This unit wasn't rooted with a canned one-click tool; the exploit was reimplemented from scratch
+    off the published description, so every byte is auditable rather than a binary pulled off a
+    fifteen-year-old mirror. The bug is <b>CVE-2010-EASY</b> — "RageAgainstTheCage" — and it lives in
+    <code>adbd</code> itself.</p>
+
+  <ol class="steps">
+    <li><b>The bug: an unchecked <code>setuid()</code>.</b> On boot, <code>adbd</code> runs as root and
+      calls <code>setuid(2000)</code> to drop to the shell user. <code>setuid()</code> returns
+      <code>EAGAIN</code> when the target uid is already at <code>RLIMIT_NPROC</code> — and Android ≤ 2.2's
+      <code>adbd</code> <em>never checked the return value</em>. So if that call fails, adbd keeps running
+      as root. <small>Fixed in Android 2.3 by checking the return.</small></li>
+    <li><b>Win the race.</b> Fork as uid 2000 until it holds every one of its ~3,800 task slots; kill
+      adbd (init frees exactly one slot respawning it); refill that slot before the fresh adbd reaches
+      its <code>setuid()</code>. That call hits <code>EAGAIN</code>, goes unchecked, and adbd stays uid 0.
+      <small>Observed: 3,810 slots saturated in 30 s, adbd respawned root, phone never rebooted.</small></li>
+    <li><b>Make it persist without reflashing anything.</b> Drop a setuid <code>su</code> onto the
+      writable <code>/system</code>, and hook boot via the one init-owned entry point that exists there:
+      <code>/init.rc</code> already declares <code>flash_recovery → /system/etc/install-recovery.sh</code>,
+      a script the stock build never shipped. Creating it displaces no vendor behaviour and starts the
+      SSH server at boot. <small>The boot ramdisk is signed and unreflashable, so this hook is the only door.</small></li>
+  </ol>
+
+  <div class="real" style="margin-top:26px">
+    <p><b>Why an exploit instead of a bootloader unlock — and why that's <em>safer</em> here.</b>
+    Motorola's 2010 "mapphone" line (Droid 2, Droid X, Milestone 2) shipped an eFuse-locked,
+    signature-checked bootloader that was <b>never broken</b>: no fastboot unlock, no custom recovery,
+    no custom kernel. That inverts the usual risk profile — modern rooting unlocks the bootloader and
+    therefore <em>wipes the device</em>, whereas this userspace escalation flashes nothing and wipes
+    nothing. A failed attempt is undone by a reboot.</p>
   </div>
-  <p class="lead" style="margin-top:18px"><em>Exact steps for this specific unit are being added —
-    it arrived pre-rooted, so they're reconstructed rather than performed.</em></p>
+
+  <p class="lead" style="margin-top:22px">Note the poetry: the root came in through <code>adbd</code>,
+    the same unauthenticated debug bridge flagged in the security section. On this phone it's both the
+    way in and the thing you must never expose. Verify with <code>adb shell su -c id</code> →
+    <code>uid=0(root)</code>.</p>
 </div></section>
 
 <section id="get"><div class="wrap">
