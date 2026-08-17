@@ -66,7 +66,10 @@ header{padding:70px 0 40px;text-align:center;border-bottom:1px solid var(--line)
 .screen .p{color:var(--amber)} .screen .d{color:#5f6b58} .screen .g{color:var(--phos-bright)}
 .cur{display:inline-block;width:6px;height:.8em;background:var(--phos);animation:blink 1.1s step-end infinite;vertical-align:-1px}
 @keyframes blink{50%{opacity:0}}
-.hint{text-align:center;color:var(--dim);font-size:.8rem;margin-top:-24px;padding-bottom:20px}
+.hero-photo{margin:0;width:min(760px,92vw)}
+.hero-photo img{width:100%;border-radius:14px;border:1px solid var(--line);
+  box-shadow:0 24px 70px rgba(0,0,0,.4);display:block}
+.hero-photo figcaption{color:var(--dim);font-size:.85rem;text-align:center;margin-top:12px}
 /* sections */
 section{padding:52px 0;border-bottom:1px solid var(--line)}
 h2{font-size:clamp(1.5rem,4vw,2.1rem);color:var(--phos-bright)}
@@ -125,17 +128,10 @@ footer a{color:var(--dim)}
   </div>
 </header>
 
-<div class="stage"><div class="device"><div class="screen">
-<span class="d"># RETROTERM 2 — field terminal</span><br>
-<span class="d"># android 2.2 · omap3630 · 5-row qwerty</span><br><br>
-<span class="p">you@homelab</span>:<span class="g">~</span>$ tmux attach<br>
-<span class="d">[0] 0:forge  1:vale  2:grove*  3:rune</span><br><br>
-<span class="p">you@homelab</span>:<span class="g">~</span>$ uptime<br>
-&nbsp; 04:41:02  up 71 days,  load 0.14<br>
-<span class="p">you@homelab</span>:<span class="g">~</span>$ ssh — auth: <span class="g">publickey ✓</span><br>
-<span class="p">you@homelab</span>:<span class="g">~</span>$ <span class="cur"></span>
-</div></div></div>
-<p class="hint">↑ not a photo — the browser drawing what the screen looks like. real hardware shots below.</p>
+<div class="stage"><figure class="hero-photo">
+  <img src="assets/photo-hero.jpg" alt="A Motorola Droid 2 held in one hand, slide-out QWERTY open, its terminal showing a live SSH session into an AI agent fleet">
+  <figcaption>Not a render. A sixteen-year-old phone, in hand, attached to a live fleet of coding agents.</figcaption>
+</figure></div>
 
 <section id="pitch"><div class="wrap">
   <h2><span class="n">01</span>The pitch</h2>
@@ -178,13 +174,14 @@ footer a{color:var(--dim)}
   <p class="lead">Screenshots pulled straight off the device's framebuffer. Hostnames redacted,
     because this page is public and the terminal on the other end is not.</p>
   <div class="shots">
+    <figure class="shot" style="flex-basis:100%">
+      <img src="assets/photo-desk.jpg" alt="The Droid 2 resting on a desk mat beside a mechanical keyboard with a glowing penguin keycap, a vertical mouse, an audio interface and a macropad">
+      <figcaption>In its natural habitat: one more terminal on the battlestation, sixteen years older than everything around it.</figcaption>
+    </figure>
     <figure class="shot">
       <img src="assets/screenshot-hostlist.png" alt="VX ConnectBot host list on the Droid 2, showing a saved key-authenticated host">
-      <figcaption>The host list. One tap → a shell. The green dot means it connected clean.</figcaption>
+      <figcaption>Straight off the framebuffer: the host list. One tap → a shell. Green dot = clean connect.</figcaption>
     </figure>
-    <div class="slot">📷 <b>Physical photos go here.</b><br>
-      Drop a shot of the actual slider into <code>assets/</code> — the terminal glowing in a
-      dark room is the whole aesthetic and no browser can fake it.</div>
   </div>
 </div></section>
 
