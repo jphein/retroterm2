@@ -18,7 +18,7 @@ Not affiliated with Motorola or Anthropic. Nothing here is for sale. It was in a
 
 - **Hardware:** Motorola Droid 2 (A955), 1 GHz OMAP3630, 512 MB RAM, 3.7″ 480×854, 5-row physical keyboard, rooted.
 - **OS:** Android 2.2 "Froyo" (2010).
-- **Client:** [VX ConnectBot](https://f-droid.org/packages/sk.vx.connectbot/) 1.7.1 — the fork maintained for old Android.
+- **Client:** [VX ConnectBot](https://github.com/vx/connectbot) 1.7.1 — the fork maintained for old Android.
 - **The other end:** an SSH box running `tmux`, where each window is a Claude Code agent session.
 
 The result: open one saved host, `tmux attach`, and a sixteen-year-old phone shares the exact
@@ -116,7 +116,7 @@ a template for exposing anything to the internet.
 ## Credits — standing on other people's work
 
 - **[ConnectBot](https://github.com/connectbot/connectbot)** — the original open-source Android SSH client.
-- **[VX ConnectBot](https://f-droid.org/packages/sk.vx.connectbot/)** — the community *fork* maintained for
+- **[VX ConnectBot](https://github.com/vx/connectbot)** — the community *fork* maintained for
   older Android, whose corrected RSA signer is the only reason key auth works on this phone at all.
 - **Sebastian Krahmer** & **The Android Exploid Crew** — authors of
   [RageAgainstTheCage](https://c-skills.blogspot.com/) (dubbed "CVE-2010-EASY" by the exploit itself), the
