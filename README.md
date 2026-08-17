@@ -113,6 +113,17 @@ A weekend project, documented honestly. LAN-only. Use a `from=` restriction on t
 The old side-port and legacy algorithms are a deliberate, scoped trade for one vintage device — not
 a template for exposing anything to the internet.
 
+## Credits — standing on other people's work
+
+- **[ConnectBot](https://github.com/connectbot/connectbot)** — the original open-source Android SSH client.
+- **[VX ConnectBot](https://f-droid.org/packages/sk.vx.connectbot/)** — the community *fork* maintained for
+  older Android, whose corrected RSA signer is the only reason key auth works on this phone at all.
+- **Sebastian Krahmer** & **The Android Exploid Crew** — authors of
+  [RageAgainstTheCage](https://c-skills.blogspot.com/) (dubbed "CVE-2010-EASY" by the exploit itself), the
+  `adbd` unchecked-`setuid` race. The root used here is a clean-room reimplementation of their published write-up.
+- **[Dropbear SSH](https://matt.ucc.asn.au/dropbear/dropbear.html)** — the small static SSH server that runs
+  on the phone at boot.
+
 ## License
 
 GPLv3 — see [LICENSE](LICENSE). Matches the realm-sigil family.

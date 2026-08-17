@@ -111,6 +111,10 @@ pre .c{color:#5f6b58}
 .share-sub{color:var(--dim);font-size:.85rem;margin-top:14px;max-width:60ch}
 footer{padding:44px 0 60px;color:var(--dim);font-size:.85rem;text-align:center}
 footer a{color:var(--dim)}
+.credits{max-width:60ch;margin:22px auto;text-align:left;font-size:.85rem;color:var(--dim)}
+.credits ul{margin:.5em 0 0;padding-left:1.1em}
+.credits li{margin:.35em 0}
+.credits a{color:var(--phos)}
 .disc{max-width:60ch;margin:0 auto 18px}
 .toggle{position:fixed;top:14px;right:14px;background:var(--card);border:1px solid var(--line);
   color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.78rem;cursor:pointer;z-index:9}
@@ -223,9 +227,14 @@ HostKeyAlgorithms +ssh-rsa
 PubkeyAcceptedAlgorithms +ssh-rsa
 Ciphers +aes128-ctr,aes128-cbc</pre></li>
 
-    <li><b>A client that signs correctly.</b> The original ConnectBot on this build produced RSA
-      signatures the server rejected as “invalid format” — key auth could never succeed.
-      <small>Fix: VX ConnectBot, the fork maintained for old Android, whose signer is repaired.</small></li>
+    <li><b>A client that signs correctly.</b> The stock
+      <a href="https://github.com/connectbot/connectbot" target="_blank" rel="noopener">ConnectBot</a>
+      build on this phone produced RSA signatures the server rejected as “invalid format” — its bundled
+      trilead-ssh2 signer emitted a malformed signature blob, so key auth could never succeed no matter
+      the key.
+      <small>Fix: <a href="https://f-droid.org/packages/sk.vx.connectbot/" target="_blank" rel="noopener">VX
+      ConnectBot</a> — a community <b>fork</b> of ConnectBot maintained for older Android, with a corrected
+      signer and updated key handling. Install it; leave the stock app alone (its keys can't be exported anyway).</small></li>
 
     <li><b>Getting the key onto it.</b> No cloud sync, no working file picker path. But the phone
       is rooted, so the key went <em>straight into the app's database</em> — the private key
@@ -308,8 +317,11 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
   <p class="lead">Root is the prerequisite — writing a key into an app's private database needs it.
     This unit wasn't rooted with a canned one-click tool; the exploit was reimplemented from scratch
     off the published description, so every byte is auditable rather than a binary pulled off a
-    fifteen-year-old mirror. The bug is <b>CVE-2010-EASY</b> — "RageAgainstTheCage" — and it lives in
-    <code>adbd</code> itself.</p>
+    fifteen-year-old mirror. The bug — dubbed <b>CVE-2010-EASY</b> by the exploit itself, better known as
+    <b>RageAgainstTheCage</b> — lives in <code>adbd</code>, and was originally found and weaponised by
+    <a href="https://c-skills.blogspot.com/" target="_blank" rel="noopener">Sebastian Krahmer</a> of
+    <b>The Android Exploid Crew</b>. What runs here is a clean-room reimplementation from their published
+    write-up.</p>
 
   <ol class="steps">
     <li><b>The bug: an unchecked <code>setuid()</code>.</b> On boot, <code>adbd</code> runs as root and
@@ -392,6 +404,20 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
   It's one person's rooted 2010 phone and the SSH bridge that turned it into a pocket console for
   a fleet of AI coding agents.</p>
   <p class="disc" style="opacity:.7">Built with a cable, a framebuffer, and poor judgment.</p>
+  <div class="credits">
+    <b>Standing on other people's work:</b>
+    <ul>
+      <li><a href="https://github.com/connectbot/connectbot" target="_blank" rel="noopener">ConnectBot</a>
+        — the original open-source Android SSH client everything here rests on.</li>
+      <li><a href="https://f-droid.org/packages/sk.vx.connectbot/" target="_blank" rel="noopener">VX ConnectBot</a>
+        — the maintained fork for older Android, with the corrected RSA signer that made key auth work at all.</li>
+      <li><b>Sebastian Krahmer</b> &amp; <b>The Android Exploid Crew</b> — authors of
+        <a href="https://c-skills.blogspot.com/" target="_blank" rel="noopener">RageAgainstTheCage</a>, the
+        <code>adbd</code> <code>setuid</code> race the root here reimplements.</li>
+      <li><a href="https://matt.ucc.asn.au/dropbear/dropbear.html" target="_blank" rel="noopener">Dropbear SSH</a>
+        — the small static SSH server that runs on the phone at boot.</li>
+    </ul>
+  </div>
   <p class="famfoot"><span>signal · GPLv3 · <a href="https://github.com/jphein/retroterm2">github</a></span>
     <span id="version" class="ver-name"></span></p>
 </div></footer>
