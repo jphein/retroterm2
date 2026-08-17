@@ -112,3 +112,7 @@ $ journalctl -u ssh-legacy | grep -E 'Accepted publickey|Starting session: shell
 A weekend project, documented honestly. LAN-only. Use a `from=` restriction on the authorized key.
 The old side-port and legacy algorithms are a deliberate, scoped trade for one vintage device — not
 a template for exposing anything to the internet.
+
+## License
+
+GPLv3 — see [LICENSE](LICENSE). Matches the realm-sigil family.
