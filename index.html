@@ -259,8 +259,82 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
     modern on the network.</p>
 </div></section>
 
+<section id="security"><div class="wrap">
+  <h2><span class="n">06</span>The compromises this requires</h2>
+  <p class="lead">This only works by switching back on a decade of cryptography the rest of the
+    world deliberately switched off. Being honest about that is the point of this section. Every
+    knob below is turned the wrong way <em>on purpose</em>, and it is only defensible because of
+    one containment: <b>it never leaves the LAN, and the worst case is someone already on your
+    network who is also holding your phone.</b></p>
+
+  <div class="real" style="border-left-color:var(--amber)">
+    <p><b>One-line verdict:</b> would you do this for anything that mattered? <b>No.</b> It is a fun
+    terminal for a home network you already trust, on a device you'd shrug off losing. Read the rows,
+    then decide if that's you.</p>
+  </div>
+
+  <h3 style="margin:30px 0 0;color:var(--phos-bright)">The SSH we had to re-enable</h3>
+  <table class="spec">
+    <tr><td>SHA-1 key exchange<br><span class="wink">dh-group14/group-exchange/group1-sha1</span></td>
+      <td>SHA-1 is collision-broken and group1 is a 1024-bit relic. Modern OpenSSH dropped these on purpose.
+      <span class="wink">Contained: no on-path attacker without already being inside the LAN.</span></td></tr>
+    <tr><td>ssh-rsa authentication<br><span class="wink">RSA signatures over SHA-1</span></td>
+      <td>OpenSSH 8.8 disabled <code>ssh-rsa</code> by default — we had to add it back with <code>+ssh-rsa</code>.
+      <span class="wink">Contained: a dedicated key, <code>from=</code>-restricted, revocable in one line.</span></td></tr>
+    <tr><td>CBC ciphers + 3DES<br><span class="wink">aes-cbc, 3des-cbc</span></td>
+      <td>CBC modes have a padding-oracle history in SSH; 3DES is a slow 64-bit-block antique. The client
+      may negotiate down to these. <span class="wink">Mitigated: aes128-ctr is offered first.</span></td></tr>
+    <tr><td>HMAC-SHA1 integrity<br><span class="wink">no modern AEAD / encrypt-then-MAC</span></td>
+      <td>A SHA-1 MAC, not a modern authenticated cipher. <span class="wink">Contained: same LAN boundary.</span></td></tr>
+    <tr><td>Trust-on-first-use host key<br><span class="wink">ssh-rsa host key only</span></td>
+      <td>The 2011 client can't verify an Ed25519 host key, so there's no strong host pinning — first
+      connection is trusted blind. <span class="wink">Contained: you own both ends on your own wire.</span></td></tr>
+    <tr><td>Password auth left enabled</td>
+      <td>The side port also accepts passwords (needed for the very first login). <span class="wink">Fix once
+      the key works: <code>PasswordAuthentication no</code>.</span></td></tr>
+  </table>
+
+  <h3 style="margin:34px 0 0;color:var(--phos-bright)">The device itself is the weakest link</h3>
+  <table class="spec">
+    <tr><td>Android 2.2, unpatched since ~2011</td>
+      <td>Roughly fifteen years of unpatched OS, kernel and browser CVEs. Nothing about the phone is
+      hardened. <span class="wink">Treat it as untrusted: isolate it on its own VLAN, don't browse the web on it.</span></td></tr>
+    <tr><td>ADB has no authentication<br><span class="wink">the "authorize this computer" dialog is Android 4.2+</span></td>
+      <td>Anyone with the USB cable gets a root-capable shell with zero prompt. <span class="wink">Which is exactly
+      why we keep ADB <b>USB-only</b> and never enabled Wi-Fi/TCP ADB — that would be an open root shell on the LAN.</span></td></tr>
+    <tr><td>Private key stored unencrypted</td>
+      <td>The key lives in the SSH app's SQLite DB with <code>encrypted=0</code>. Physical loss of the phone
+      is key compromise. <span class="wink">Contained: <code>from=</code> scoping + delete-one-line revocation; a
+      key passphrase would harden it, at the cost of tap-to-connect.</span></td></tr>
+  </table>
+
+  <p class="lead" style="margin-top:24px">If any of that reaches the public internet, or the key
+    can touch anything you'd miss, this stops being a toy and becomes a liability. Keep it a toy.</p>
+</div></section>
+
+<section id="root"><div class="wrap">
+  <h2><span class="n">07</span>Rooting the thing</h2>
+  <p class="lead">Root is a prerequisite — the key was written straight into the SSH app's database,
+    which needs it. The Droid 2 in these photos was <b>already rooted</b> before this project began, so
+    the honest answer is: use the well-documented era-standard method for your exact model and build.</p>
+  <div class="grid">
+    <div class="card"><h3>Droid 2 / early Motorola</h3><p>The community tools of the day —
+      Motorola-specific one-click rooters and recovery bootstraps — are archived across XDA and
+      GitHub. Match the tool to your exact software version; a mismatch soft-bricks nothing you
+      can't recover, but it won't take.</p></div>
+    <div class="card"><h3>Verify it took</h3><p><code>adb shell su -c id</code> returning
+      <code>uid=0(root)</code> is the whole test. If it prompts on the phone for Superuser access,
+      grant it and re-run.</p></div>
+    <div class="card"><h3>Then, and only then</h3><p>The database injection in step&nbsp;3 works.
+      Without root there's no path to the app's private storage on a stock build, and no working
+      file-import UI either.</p></div>
+  </div>
+  <p class="lead" style="margin-top:18px"><em>Exact steps for this specific unit are being added —
+    it arrived pre-rooted, so they're reconstructed rather than performed.</em></p>
+</div></section>
+
 <section id="get"><div class="wrap">
-  <h2><span class="n">06</span>Get yours</h2>
+  <h2><span class="n">08</span>Get yours</h2>
   <div class="grid">
     <div class="card"><h3>Step 1</h3><p>Find a Droid 2 (or any rooted, physical-keyboard Android
       2.x device) in a drawer, a bin, or a relative's garage.</p></div>
@@ -275,7 +349,7 @@ Ciphers +aes128-ctr,aes128-cbc</pre></li>
 </div></section>
 
 <section id="share"><div class="wrap">
-  <h2><span class="n">07</span>📣 Share it</h2>
+  <h2><span class="n">09</span>📣 Share it</h2>
   <p class="lead">If a sixteen-year-old phone running your AI agents made you smile, spread it.</p>
   <div class="share-row">
     <a class="btn share" target="_blank" rel="noopener"
