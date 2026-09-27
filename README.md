@@ -126,4 +126,4 @@ a template for exposing anything to the internet.
 
 ## License
 
-GPLv3 — see [LICENSE](LICENSE). Matches the realm-sigil family.
+AGPL-3.0-or-later © 2026 Jeffrey Pine Hein. See [LICENSE](LICENSE).
